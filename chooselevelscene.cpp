@@ -1,4 +1,4 @@
-#include "chooselevelscene.h"
+﻿#include "chooselevelscene.h"
 
 ChooseLevelScene::ChooseLevelScene(QWidget *parent) : QMainWindow(parent)
 {
@@ -6,27 +6,32 @@ ChooseLevelScene::ChooseLevelScene(QWidget *parent) : QMainWindow(parent)
     setWindowIcon(QIcon(":/game_res/res/Coin0001.png"));
 
     //    painter->drawPixmap();
-    setWindowTitle("选择关卡场景");
+    setWindowTitle(QString::fromUtf16(u"选择关卡场景"));
     //开始菜单栏
     QMenuBar *startBar = new QMenuBar(this);
     setMenuBar(startBar);
 
-    //退出菜单项
-    QMenu *startM = startBar->addMenu("开始");
+    //exit menuBar
+    //    QMenu *startM = startBar->addMenu("开始");
+    QMenu *startM = startBar->addMenu(QString::fromUtf16(u"开始"));
     //   startM->setTitle("开始");
-    QAction *quitAction = startM->addAction("退出");
+    QAction *quitAction = startM->addAction(QString::fromUtf16(u"退出"));
     //   quitAction->setText("退出");
     //   startM->addAction(quitAction);
-    connect(quitAction,&QAction::triggered,[=](){
+    connect(quitAction,&QAction::triggered,this,[=](){
         this->close();
     });
+//选择关卡/点击返回音效
+    QSound *chooseLSound = new QSound("://game_res/res/TapButtonSound.wav");
+    QSound *backSound = new QSound("://game_res/res/BackButtonSound.wav");
 
     //返回按钮
     MyPushButton *backBtn = new MyPushButton(":/game_res/res/BackButton.png",":/game_res/res/BackButtonSelected.png");
     backBtn->setParent(this);
     backBtn->move(this->width()-backBtn->width(),this->height()-backBtn->height());
-    connect(backBtn,&MyPushButton::clicked,[=](){
+    connect(backBtn,&MyPushButton::clicked,this,[=](){
         qDebug()<<"点击返回了返回按钮"<<endl;
+        backSound->play();
         QTimer::singleShot(400,this,[=](){
             emit this->chooseSceneBack();
         });
@@ -40,18 +45,33 @@ ChooseLevelScene::ChooseLevelScene(QWidget *parent) : QMainWindow(parent)
         menuBtn->setParent(this);
         menuBtn->move(70+i%5*70,250+i/5*130);
         //监听每个关卡按钮的点击事件
-        connect(menuBtn,&MyPushButton::clicked,[=](){
+        connect(menuBtn,&MyPushButton::clicked,this,[=]()
+        {
+            chooseLSound->play();
             qDebug()<<"点击第"<<i+1<<"关"<<endl;
+            this->hide();
+            pScene = new PlayScene(i+1);
+            pScene->setGeometry(this->geometry());
+            pScene->show();
+            connect(pScene,&PlayScene::chooseSceneBack,this,[=]()
+            {
+                pScene->hide();
+                delete pScene;
+                this->setGeometry(pScene->geometry());
+                this->show();
+//                this->hide();
+                pScene = NULL;
+            });
         });
 
-//        QLabel *menuLabel = new QLabel(menuBtn);
-         QLabel *menuLabel = new QLabel(this);
-//         QLabel *menuLabel = new QLabel;
-//         menuLabel->setParent(menuBtn);
+        //        QLabel *menuLabel = new QLabel(menuBtn);
+        QLabel *menuLabel = new QLabel(this);
+        //         QLabel *menuLabel = new QLabel;
+        //         menuLabel->setParent(menuBtn);
         menuLabel->setFixedSize(menuBtn->width(),menuBtn->height());
         menuLabel->setText(QString::number(i+1));
         menuLabel->move(70+i%5*70,250+i/5*130);
-//       menuLabel->setAlignment(::WA_TransparentForMouseEvents);
+        //       menuLabel->setAlignment(::WA_TransparentForMouseEvents);
         menuLabel->setAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
         menuLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
 
@@ -65,5 +85,6 @@ void ChooseLevelScene::paintEvent(QPaintEvent*){
     //画上背景图标
     pix.load(":/game_res/res/Title.png");
     painter->drawPixmap(this->width()*0.5-pix.width()*0.5,50,pix.width(),pix.height(),pix);
+    painter->end();
 
 }

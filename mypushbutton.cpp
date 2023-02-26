@@ -1,9 +1,9 @@
-#include "mypushbutton.h"
+﻿#include "mypushbutton.h"
 
 //MyPushButton::MyPushButton(QWidget *parent) : QWidget(parent)
 //{
 
-//}
+//} 
 
 MyPushButton::MyPushButton(QString normalImg,QString pressImg ){
     normalImgPath = normalImg;

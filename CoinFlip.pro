@@ -1,9 +1,10 @@
-QT       += core gui
+QT       += core gui multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11\
     resources_big
+
 #CONFIG += resources_big
 
 # The following define makes your compiler emit warnings if you use
@@ -19,14 +20,20 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     chooselevelscene.cpp \
+    dataconfig.cpp \
     main.cpp \
     mainscene.cpp \
-    mypushbutton.cpp
+    mycoin.cpp \
+    mypushbutton.cpp \
+    playscene.cpp
 
 HEADERS += \
     chooselevelscene.h \
+    dataconfig.h \
     mainscene.h \
-    mypushbutton.h
+    mycoin.h \
+    mypushbutton.h \
+    playscene.h
 
 FORMS += \
     mainscene.ui
